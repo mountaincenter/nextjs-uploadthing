@@ -1,11 +1,21 @@
 'use client';
 
+import { useRef, useState } from 'react';
 import { UploadButton } from './utils/uploadthing';
-import Image from 'next/image';
+import Webcam from 'react-webcam';
+import { CameraIcon } from '@heroicons/react/24/outline';
 
 export default function Home() {
-  const uploadedImageUrl =
-    'https://utfs.io/f/21e4a26d-419d-4ebf-98e0-73c813373257-2vjrgb.jpeg';
+  const webcamRef = useRef<Webcam>(null);
+  const [isCameraActive, setIsCameraActive] = useState(false);
+  const videoConstraints = {
+    facingMode: 'environment',
+  };
+
+  const toggleCamera = () => {
+    setIsCameraActive(!isCameraActive);
+  };
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <UploadButton
@@ -18,13 +28,19 @@ export default function Home() {
           alert('ERROR! ${error.message}');
         }}
       />
-      <Image
-        src={uploadedImageUrl}
-        alt="アップロードされた画像"
-        width={500} // 希望の幅を設定
-        height={300} // 希望の高さを設定
-        unoptimized={true} // 外部ドメインが'next.config.js'で設定されていない場合
-      />
+      {isCameraActive && (
+        <>
+          <Webcam
+            audio={false}
+            height={720}
+            ref={webcamRef}
+            screenshotFormat="image/jpeg"
+            width={1280}
+            videoConstraints={videoConstraints}
+          />
+        </>
+      )}
+      <CameraIcon className="h-5 w-5" onClick={toggleCamera} />
     </main>
   );
 }
